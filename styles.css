@@ -142,6 +142,8 @@ p {
   cursor: pointer;
   transition: all 0.2s ease;
   transform: scale(1);
+  font-size: 1.2em;
+
 }
 
 .btn:hover {
