@@ -5,9 +5,20 @@ let isMobileMenuOpen = false;
 
 // Mobile menu toggle function
 function toggleMobileMenu() {
+    // Only allow toggle on mobile screens
+    if (window.innerWidth >= 768) {
+        return;
+    }
+    
     const mobileNav = document.querySelector('.mobile-nav');
     const menuIcon = document.querySelector('.menu-icon');
     const closeIcon = document.querySelector('.close-icon');
+    
+    // Safety checks
+    if (!mobileNav || !menuIcon || !closeIcon) {
+        console.warn('Mobile menu elements not found');
+        return;
+    }
     
     isMobileMenuOpen = !isMobileMenuOpen;
     
@@ -289,9 +300,68 @@ function initializeSectionAnimations() {
     document.head.appendChild(sectionStyle);
 }
 
+// Initialize mobile menu state
+function initializeMobileMenu() {
+    const mobileNav = document.querySelector('.mobile-nav');
+    const menuIcon = document.querySelector('.menu-icon');
+    const closeIcon = document.querySelector('.close-icon');
+    
+    // Always start with menu closed
+    isMobileMenuOpen = false;
+    
+    // Force correct initial state
+    if (mobileNav) {
+        mobileNav.classList.add('hidden');
+        mobileNav.style.display = ''; // Clear any inline styles
+    }
+    if (menuIcon) {
+        menuIcon.classList.remove('hidden');
+        menuIcon.style.display = '';
+    }
+    if (closeIcon) {
+        closeIcon.classList.add('hidden');
+        closeIcon.style.display = '';
+    }
+}
+
+// Force correct mobile menu state based on screen size
+function enforceCorrectMenuState() {
+    const mobileNav = document.querySelector('.mobile-nav');
+    const menuIcon = document.querySelector('.menu-icon');
+    const closeIcon = document.querySelector('.close-icon');
+    
+    if (window.innerWidth >= 768) {
+        // Desktop: always hide mobile elements
+        isMobileMenuOpen = false;
+        if (mobileNav) {
+            mobileNav.classList.add('hidden');
+            mobileNav.style.display = 'none';
+        }
+        if (menuIcon) menuIcon.classList.remove('hidden');
+        if (closeIcon) closeIcon.classList.add('hidden');
+    } else {
+        // Mobile: respect current state but ensure menu starts closed if not explicitly opened
+        if (mobileNav) mobileNav.style.display = '';
+        
+        if (!isMobileMenuOpen) {
+            if (mobileNav) mobileNav.classList.add('hidden');
+            if (menuIcon) menuIcon.classList.remove('hidden');
+            if (closeIcon) closeIcon.classList.add('hidden');
+        }
+    }
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all features
+    // Initialize mobile menu first
+    initializeMobileMenu();
+    
+    // Enforce correct state after a short delay
+    setTimeout(() => {
+        enforceCorrectMenuState();
+    }, 50);
+    
+    // Initialize all other features
     initializeScrollAnimations();
     initializeRippleEffects();
     initializeParallaxEffects();
@@ -305,11 +375,13 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🎨 Oliver Rågmo Portfolio loaded successfully!');
 });
 
-// Handle window resize - close mobile menu on desktop
+// Handle window resize - ensure proper mobile menu behavior
 window.addEventListener('resize', function() {
-    if (window.innerWidth >= 768 && isMobileMenuOpen) {
-        toggleMobileMenu();
-    }
+    // Use a small delay to ensure the resize has completed
+    clearTimeout(window.resizeTimeout);
+    window.resizeTimeout = setTimeout(() => {
+        enforceCorrectMenuState();
+    }, 100);
 });
 
 // Keyboard navigation
