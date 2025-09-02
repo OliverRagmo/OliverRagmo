@@ -437,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeRippleEffects();
     initializeParallaxEffects();
     initializeSectionAnimations();
+    initializeThemeSystem();
     
     // Initialize Lucide icons
     if (typeof lucide !== 'undefined') {
@@ -489,11 +490,115 @@ function initializePageLoad() {
 // Initialize page loading
 initializePageLoad();
 
+// Theme System Integration
+function initializeThemeSystem() {
+    // Check if theme system is available
+    if (typeof ThemeSystem !== 'undefined') {
+        console.log('🎨 Theme system initialized');
+        
+        // Apply theme on dark mode toggle
+        const darkModeObserver = new MutationObserver(() => {
+            if (typeof ThemeSystem.applyTheme === 'function') {
+                ThemeSystem.applyTheme();
+            }
+        });
+        
+        darkModeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+}
+
+// Dark mode toggle function for compatibility
+function toggleDarkModePortfolio() {
+    document.documentElement.classList.toggle('dark');
+    
+    // Update theme if theme system is available
+    if (typeof ThemeSystem !== 'undefined' && typeof ThemeSystem.applyTheme === 'function') {
+        ThemeSystem.applyTheme();
+    }
+    
+    // Update header styles for dark mode
+    updateHeaderForDarkMode();
+}
+
+// Update header background based on dark mode
+function updateHeaderForDarkMode() {
+    const header = document.querySelector('.header');
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    if (header) {
+        const scrollY = window.scrollY;
+        if (isDark) {
+            if (scrollY > 50) {
+                header.style.backgroundColor = 'rgba(17, 17, 17, 0.95)';
+            } else {
+                header.style.backgroundColor = 'rgba(17, 17, 17, 0.8)';
+            }
+        } else {
+            if (scrollY > 50) {
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+            } else {
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            }
+        }
+    }
+}
+
+// Update the existing header scroll function
+function updateHeaderOnScroll() {
+    updateHeaderForDarkMode();
+}
+
+// Add theme demo functionality
+function showThemeDemo() {
+    const demoContent = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+            <div style="background: var(--card); border-radius: 1rem; padding: 2rem; max-width: 500px; width: 100%;">
+                <h3 style="margin: 0 0 1rem 0; color: var(--foreground);">🎨 Quick Theme Test</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                    <button onclick="ThemeSystem?.setColorPreset?.('cherry'); updateDemoColors();" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #e53e3e; color: white;">Red</button>
+                    <button onclick="ThemeSystem?.setColorPreset?.('ocean'); updateDemoColors();" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #0284c7; color: white;">Blue</button>
+                    <button onclick="ThemeSystem?.setColorPreset?.('forest'); updateDemoColors();" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #166534; color: white;">Green</button>
+                    <button onclick="ThemeSystem?.setColorPreset?.('violet'); updateDemoColors();" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #7c3aed; color: white;">Purple</button>
+                </div>
+                <button onclick="toggleDarkModePortfolio(); updateDemoColors();" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--accent); color: var(--foreground);">Toggle Dark Mode</button>
+                <div id="demo-colors" style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 1rem;"></div>
+                <button onclick="this.closest('.theme-demo-overlay').remove();" style="background: var(--red-accent); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'theme-demo-overlay';
+    overlay.innerHTML = demoContent;
+    document.body.appendChild(overlay);
+    
+    // Update colors initially
+    setTimeout(updateDemoColors, 100);
+}
+
+function updateDemoColors() {
+    const demoColorsDiv = document.getElementById('demo-colors');
+    if (demoColorsDiv && typeof ThemeSystem !== 'undefined') {
+        const theme = ThemeSystem.getCurrentTheme?.() || {};
+        const isDark = document.documentElement.classList.contains('dark');
+        demoColorsDiv.innerHTML = `
+            Mode: ${isDark ? 'Dark' : 'Light'}<br>
+            Brand: ${theme.primary?.[500] || 'N/A'}<br>
+            Background: ${theme.background?.base || 'N/A'}
+        `;
+    }
+}
+
 // Export functions for global use
 window.portfolioFunctions = {
     scrollToSection,
     toggleMobileMenu,
     handleFormSubmit,
     logMenuState,
-    forceMobileMenuClosed
+    forceMobileMenuClosed,
+    toggleDarkModePortfolio,
+    showThemeDemo
 };
