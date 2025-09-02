@@ -310,32 +310,22 @@ p {
   }
 }
 
-/* Mobile Navigation - Only visible on mobile when open */
+/* Mobile Navigation - Controlled entirely by JavaScript */
 .mobile-nav {
   padding-top: 1rem;
   padding-bottom: 0.5rem;
   border-top: 1px solid var(--border);
   margin-top: 1rem;
-  display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  /* Hidden by default, JavaScript will control display */
+  display: none;
 }
 
-/* Always hide mobile nav on desktop, regardless of .hidden class */
+/* Always hide mobile nav on desktop regardless of JavaScript state */
 @media (min-width: 768px) {
   .mobile-nav {
     display: none !important;
-  }
-}
-
-/* Ensure mobile nav is hidden by default on mobile */
-@media (max-width: 767px) {
-  .mobile-nav.hidden {
-    display: none;
-  }
-
-  .mobile-nav:not(.hidden) {
-    display: flex;
   }
 }
 
