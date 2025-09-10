@@ -413,14 +413,14 @@ p {
 }
 
 .avatar-image {
-  width: 8rem;
-  height: 8rem;
+  width: 12rem;
+  height: 12rem;
   border-radius: 50%;
   margin: 0 auto;
   margin-bottom: 1.5rem;
   object-fit: cover;
-  filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.1))
-    drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.05));
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.1))
+    drop-shadow(8px 8px 4px rgba(0, 0, 0, 0.05));
 }
 
 .hero-title-container {
